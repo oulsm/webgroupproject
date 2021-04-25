@@ -21,3 +21,11 @@ INSERT INTO user_roles(username, role) VALUES ('vanessa', 'ROLE_ADMIN');
 
 INSERT INTO users VALUES ('kevin', '{noop}kevinpw');
 INSERT INTO user_roles(username, role) VALUES ('kevin', 'ROLE_USER');
+CREATE TABLE foodlist (
+    foodid INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    foodname VARCHAR(50) NOT NULL,
+    description VARCHAR(300) NOT NULL,
+    price DOUBLE NOT NULL,
+    noffood VARCHAR(50) NOT NULL,
+    PRIMARY KEY (foodname)
+);

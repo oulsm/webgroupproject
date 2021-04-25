@@ -8,11 +8,22 @@ import java.util.Map;
 public class Item implements Serializable {
 
     private long id;
+    private String foodname;
     private String description;
     private String price;
     private String noffood;
     private Map<String, Comments> comments = new Hashtable<>();
     private Map<String, Attachment> attachments = new Hashtable<>();
+
+    public String getFoodname() {
+        return foodname;
+    }
+
+    public void setFoodname(String foodname) {
+        this.foodname = foodname;
+    }
+
+   
 
     public long getId() {
         return id;

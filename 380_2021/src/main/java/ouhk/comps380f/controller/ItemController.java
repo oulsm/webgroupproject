@@ -2,12 +2,21 @@ package ouhk.comps380f.controller;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,14 +30,35 @@ import sun.security.krb5.internal.Ticket;
 
 @Controller
 @RequestMapping("/food")
-public class ItemController {
+public class ItemController implements RowMapper<Item>  {
 
     private volatile long ITEM_ID_SEQUENCE = 1;
-    private Map<Long, Item> itemDatabase = new Hashtable<>();
-
+   private Map<Long, Item> itemDatabase = new Hashtable<>();
+    
     @GetMapping(value = {"", "/item"})
     public String list(ModelMap model) {
-        model.addAttribute("itemDatabase", itemDatabase);
+         DriverManagerDataSource ds;
+        ds= new DriverManagerDataSource();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+        ds.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
+        ds.setUrl("jdbc:derby://localhost:1527/food");
+        ds.setUsername("nbuser");
+        ds.setPassword("nbuser");
+       // Item item = new Item();
+      
+       String sqlSelect = "SELECT * FROM FOODLIST ORDER BY FOODID";
+       List<Item> Itemlist = jdbcTemplate.query(sqlSelect, new ItemMapper());
+       for(Item lists:Itemlist){
+          System.out.println("id = " + lists.getId());
+          System.out.println("foodname" +lists.getFoodname());
+          this.itemDatabase.put(lists.getId(), lists);
+       }
+       System.out.println("map" + itemDatabase);
+       //this.itemDatabase.put(lists.getId(), lists);
+       
+     
+       // jdbcTemplate.queryForObject("SELECT * FROM FOODLIST","",itemDatabase );
+       model.addAttribute("itemDatabase", itemDatabase);
         return "list";
     }
 
@@ -46,24 +76,31 @@ public class ItemController {
 
     @GetMapping("/create")
     public ModelAndView create() {
+        
         return new ModelAndView("add", "itemForm", new Form());
+    }
+
+    @Override
+    public Item mapRow(ResultSet rs, int i) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public static class Form {
 
-        private long id;
+        private String foodname;
         private String description;
         private String price;
         private String noffood;
         private List<MultipartFile> attachments;
 
-        public long getId() {
-            return id;
+        public String getFoodname() {
+            return foodname;
         }
 
-        public void setId(long id) {
-            this.id = id;
+        public void setFoodname(String foodname) {
+            this.foodname = foodname;
         }
+
 
         public String getDescription() {
             return description;
@@ -102,13 +139,14 @@ public class ItemController {
     @PostMapping("/create")
     public View create(Form form, Principal principal) throws IOException {
         Item item = new Item();
-        item.setId(this.getNextItemId());
+       // item.setId(this.getNextItemId());
         //item.setCustomerName(principal.getName());
         //item.setSubject(form.getSubject());
         //item.setBody(form.getBody());
-        item.setDescription(form.getDescription());
-        item.setPrice(form.getPrice());
-        item.setNoffood(form.getNoffood());
+        //item.setFoodname(form.getFoodname());
+        //item.setDescription(form.getDescription());
+        //item.setPrice(form.getPrice());
+      //  item.setNoffood(form.getNoffood());
         
         
 
@@ -122,10 +160,23 @@ public class ItemController {
                 item.addAttachment(attachment);
             }
         }
-        this.itemDatabase.put(item.getId(), item);
-        return new RedirectView("/item/view/" + item.getId(), true);
+        DriverManagerDataSource ds;
+        ds= new DriverManagerDataSource();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+        ds.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
+        ds.setUrl("jdbc:derby://localhost:1527/food");
+        ds.setUsername("nbuser");
+        ds.setPassword("nbuser");
+          jdbcTemplate.update(
+          "INSERT INTO FOODLIST(foodname, description, price, noffood) VALUES (?, ?, ?, ?)",  form.getFoodname() ,form.getDescription(), form.getPrice() , form.getNoffood());
+
+        
+       // this.itemDatabase.put(item.getId(), item);
+        //return new RedirectView("/item/view/" + item.getId(), true);
+        return new RedirectView("/food/item");
         
     }
+      
 
     private synchronized long getNextItemId() {
         return this.ITEM_ID_SEQUENCE++;

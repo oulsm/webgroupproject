@@ -33,14 +33,15 @@
             <c:forEach items="${itemDatabase}" var="entry">
                 Item ${entry.key}:
                 <a href="<c:url value="/item/view/${entry.key}" />">
-                    <c:out value="${entry.value.subject}" /></a>
-                (customer: <c:out value="${entry.value.customerName}" />)
+                    <c:out value="${entry.value.foodname}" /></a>
+                 (price : <c:out value="${entry.value.price}" />)
                 <security:authorize access="hasRole('ADMIN') ">
                     [<a href="<c:url value="/item/edit/${entry.key}" />">Edit</a>]
                 </security:authorize>
                 <security:authorize access="hasRole('ADMIN')">
                     [<a href="<c:url value="/item/delete/${entry.key}" />">Delete</a>]<br />
                 </security:authorize>
+                    <br />
             </c:forEach>
         </c:otherwise>
     </c:choose>
