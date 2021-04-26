@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ouhk.comps380f.controller;
 
 
@@ -18,8 +14,8 @@ public class ItemMapper implements RowMapper<Item> {
                 item.setId(result.getLong("foodid"));
                 item.setFoodname(result.getString("foodname"));
                 item.setDescription(result.getString("description"));
-                item.setPrice(result.getString("price"));
-                item.setNoffood(result.getString("noffood"));
+                item.setPrice(result.getDouble("price"));
+                item.setNoffood(result.getLong("noffood"));
                 return item;
 }
 }

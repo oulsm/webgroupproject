@@ -1,11 +1,14 @@
 ouhk\comps380f\controller\ItemController$Form.class
 ouhk\comps380f\model\Item.class
+ouhk\comps380f\model\Comments.class
+ouhk\comps380f\controller\ItemController.class
+ouhk\comps380f\controller\RegisterController.class
+ouhk\comps380f\controller\RegisterController$CForm.class
+ouhk\comps380f\controller\ItemController$CForm.class
+ouhk\comps380f\controller\CommentsMapper.class
 ouhk\comps380f\view\DownloadingView.class
 ouhk\comps380f\controller\ItemMapper.class
-ouhk\comps380f\model\Comments.class
 ouhk\comps380f\controller\IndexController.class
-ouhk\comps380f\controller\ItemController.class
 ouhk\comps380f\controller\RegisterController$Form.class
-ouhk\comps380f\controller\RegisterController.class
 ouhk\comps380f\model\Attachment.class
 ouhk\comps380f\model\Register.class

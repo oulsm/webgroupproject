@@ -11,9 +11,17 @@ package ouhk.comps380f.model;
  */
 public class Comments {
     private long id;
-    private String customerName;
-    private String subject;
+    private long floor;
+    private String username;
     private String body;
+
+    public long getFloor() {
+        return floor;
+    }
+
+    public void setFloor(long floor) {
+        this.floor = floor;
+    }
 
     public long getId() {
         return id;
@@ -23,22 +31,17 @@ public class Comments {
         this.id = id;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getSubject() {
-        return subject;
-    }
+    
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
+ 
     public String getBody() {
         return body;
     }

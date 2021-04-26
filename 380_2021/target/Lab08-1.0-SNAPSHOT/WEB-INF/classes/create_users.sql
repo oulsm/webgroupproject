@@ -26,6 +26,15 @@ CREATE TABLE foodlist (
     foodname VARCHAR(50) NOT NULL,
     description VARCHAR(300) NOT NULL,
     price DOUBLE NOT NULL,
-    noffood VARCHAR(50) NOT NULL,
-    PRIMARY KEY (foodname)
+    noffood INT NOT NULL,
+    PRIMARY KEY (foodid)
+);
+
+CREATE TABLE comments (
+    foodid INTEGER NOT NULL ,
+    floor INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    username VARCHAR(50) NOT NULL,
+    comment VARCHAR(300) NOT NULL,
+    PRIMARY KEY (floor),
+    FOREIGN KEY (foodid) REFERENCES foodlist(foodid)
 );

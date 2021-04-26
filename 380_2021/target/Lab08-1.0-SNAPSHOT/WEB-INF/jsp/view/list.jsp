@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Customer Support</title>
+        <title>Food Shop</title>
     </head>
     <body>
         
@@ -31,15 +31,15 @@
         </c:when>
         <c:otherwise>
             <c:forEach items="${itemDatabase}" var="entry">
-                Item ${entry.key}:
-                <a href="<c:url value="/item/view/${entry.key}" />">
+                Food Item name:
+                <a href="<c:url value="/food/item/view/${entry.key}" />">
                     <c:out value="${entry.value.foodname}" /></a>
-                 (price : <c:out value="${entry.value.price}" />)
+                 (price : $<c:out value="${entry.value.price}" />/one)
                 <security:authorize access="hasRole('ADMIN') ">
-                    [<a href="<c:url value="/item/edit/${entry.key}" />">Edit</a>]
+                    [<a href="<c:url value="/food/item/edit/${entry.key}" />">Edit</a>]
                 </security:authorize>
                 <security:authorize access="hasRole('ADMIN')">
-                    [<a href="<c:url value="/item/delete/${entry.key}" />">Delete</a>]<br />
+                    [<a href="<c:url value="/food/item/delete/${entry.key}" />">Delete</a>]<br />
                 </security:authorize>
                     <br />
             </c:forEach>

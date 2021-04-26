@@ -10,8 +10,8 @@ public class Item implements Serializable {
     private long id;
     private String foodname;
     private String description;
-    private String price;
-    private String noffood;
+    private Double price;
+    private long noffood;
     private Map<String, Comments> comments = new Hashtable<>();
     private Map<String, Attachment> attachments = new Hashtable<>();
 
@@ -41,19 +41,19 @@ public class Item implements Serializable {
         this.description = description;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
-    public String getNoffood() {
+    public long getNoffood() {
         return noffood;
     }
 
-    public void setNoffood(String noffood) {
+    public void setNoffood(long noffood) {
         this.noffood = noffood;
     }
 
