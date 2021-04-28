@@ -21,9 +21,10 @@
     </form>
    <a href="<c:url value="/register/1" />">Sign up</a><br /><br />
      </security:authorize>
-    <h2>Items</h2>
+    <h2>Food Items</h2>
      <security:authorize access="hasRole('ADMIN')">
-    <a href="<c:url value="/food/create" />">Create a Fast Food Item</a><br /><br />
+         You can go to <a href="<c:url value="/admin/page" />">admin page</a> , Edit or delete and the food item below <br/><br/>
+    <a href="<c:url value="/food/create" />">Create a Fast Food Item Here.</a><br /><br />
     </security:authorize>
     <c:choose>
         <c:when test="${fn:length(itemDatabase) == 0}">

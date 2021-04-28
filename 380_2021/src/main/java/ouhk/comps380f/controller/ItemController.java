@@ -1,5 +1,7 @@
 package ouhk.comps380f.controller;
 
+import ouhk.comps380f.mapper.CommentsMapper;
+import ouhk.comps380f.mapper.ItemMapper;
 import java.io.IOException;
 import java.security.Principal;
 import java.sql.ResultSet;
@@ -7,6 +9,7 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -24,7 +27,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import ouhk.comps380f.model.Attachment;
 import ouhk.comps380f.model.Comments;
 import ouhk.comps380f.model.Item;
-import sun.security.krb5.internal.Ticket;
+import ouhk.comps380f.model.Register;
+
 
 @Controller
 @RequestMapping("/food")
@@ -33,9 +37,7 @@ public class ItemController {
     private volatile long ITEM_ID_SEQUENCE = 1;
     private Map<Long, Item> itemDatabase = new Hashtable<>();
   
-
-    @GetMapping(value = {"", "/item"})
-    public String list(ModelMap model) {
+public JdbcTemplate jdbctempele(){
         DriverManagerDataSource ds;
         ds = new DriverManagerDataSource();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
@@ -43,15 +45,20 @@ public class ItemController {
         ds.setUrl("jdbc:derby://localhost:1527/food");
         ds.setUsername("nbuser");
         ds.setPassword("nbuser");
-        // Item item = new Item();
+        return jdbcTemplate;
+}
+    @GetMapping(value = {"", "/item"})
+    public String list(ModelMap model) {
+      
+       JdbcTemplate jt = jdbctempele();
         String sqlSelect = "SELECT * FROM FOODLIST ORDER BY FOODID";
-        List<Item> Itemlist = jdbcTemplate.query(sqlSelect, new ItemMapper());
+        List<Item> Itemlist = jt.query(sqlSelect, new ItemMapper());
         for (Item lists : Itemlist) {
-            System.out.println("id = " + lists.getId());
-            System.out.println("foodname" + lists.getFoodname());
+         //   System.out.println("id = " + lists.getId());
+           // System.out.println("foodname" + lists.getFoodname());
             this.itemDatabase.put(lists.getId(), lists);
         }
-        System.out.println("map" + itemDatabase);
+        //System.out.println("map" + itemDatabase);
         //this.itemDatabase.put(lists.getId(), lists);
 
         // jdbcTemplate.queryForObject("SELECT * FROM FOODLIST","",itemDatabase );
@@ -65,7 +72,7 @@ public class ItemController {
     }
 
     //  private volatile long ITEM_ID_SEQUENCE = 1;
-    // private Map<Long, Ticket> ticketDatabase = new Hashtable<>();
+    // private Map<Long, Ticket> itemDatabase = new Hashtable<>();
     @GetMapping("/create")
     public ModelAndView create() {
 
@@ -76,8 +83,8 @@ public class ItemController {
 
         private String foodname;
         private String description;
-        private String price;
-        private String noffood;
+        private Double price;
+        private Long noffood;
         private List<MultipartFile> attachments;
 
         public String getFoodname() {
@@ -96,21 +103,22 @@ public class ItemController {
             this.description = description;
         }
 
-        public String getPrice() {
+        public Double getPrice() {
             return price;
         }
 
-        public void setPrice(String price) {
+        public void setPrice(Double price) {
             this.price = price;
         }
 
-        public String getNoffood() {
+        public Long getNoffood() {
             return noffood;
         }
 
-        public void setNoffood(String noffood) {
+        public void setNoffood(Long noffood) {
             this.noffood = noffood;
         }
+
 
         public List<MultipartFile> getAttachments() {
             return attachments;
@@ -142,15 +150,7 @@ public class ItemController {
 
     @PostMapping("/create")
     public View create(Form form, Principal principal) throws IOException {
-        Item item = new Item();
-        // item.setId(this.getNextItemId());
-        //item.setCustomerName(principal.getName());
-        //item.setSubject(form.getSubject());
-        //item.setBody(form.getBody());
-        //item.setFoodname(form.getFoodname());
-        //item.setDescription(form.getDescription());
-        //item.setPrice(form.getPrice());
-        //  item.setNoffood(form.getNoffood());
+        Item item = new Item();;
 
         for (MultipartFile filePart : form.getAttachments()) {
             Attachment attachment = new Attachment();
@@ -162,19 +162,13 @@ public class ItemController {
                 item.addAttachment(attachment);
             }
         }
-        DriverManagerDataSource ds;
-        ds = new DriverManagerDataSource();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-        ds.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
-        ds.setUrl("jdbc:derby://localhost:1527/food");
-        ds.setUsername("nbuser");
-        ds.setPassword("nbuser");
-        jdbcTemplate.update(
+        JdbcTemplate jt = jdbctempele();
+        jt.update(
                 "INSERT INTO FOODLIST(foodname, description, price, noffood) VALUES (?, ?, ?, ?)", form.getFoodname(), form.getDescription(), form.getPrice(), form.getNoffood());
 
         // this.itemDatabase.put(item.getId(), item);
         //return new RedirectView("/item/view/" + item.getId(), true);
-        return new RedirectView("/food/item");
+        return new RedirectView("item");
 
     }
 
@@ -189,15 +183,9 @@ public class ItemController {
         }
         
         
-        DriverManagerDataSource ds;
-        ds = new DriverManagerDataSource();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-        ds.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
-        ds.setUrl("jdbc:derby://localhost:1527/food");
-        ds.setUsername("nbuser");
-        ds.setPassword("nbuser");
+        JdbcTemplate jt = jdbctempele();
         String sqlSelect = "SELECT * FROM COMMENTS WHERE FOODID = "+itemId;
-        List<Comments> Commentslist = jdbcTemplate.query(sqlSelect,new CommentsMapper());
+        List<Comments> Commentslist = jt.query(sqlSelect,new CommentsMapper());
         for (Comments comment : Commentslist) {
             System.out.println("id = " + comment.getId());
              System.out.println("floor = " + comment.getFloor());
@@ -218,6 +206,7 @@ public class ItemController {
         return new ModelAndView("view", "CForm", new CForm());
         
     }
+    
  @PostMapping("/item/view/{itemId}")
     public ModelAndView viewinsert(@PathVariable("itemId") long itemId,CForm form, Principal principal,
             ModelMap model) {
@@ -227,17 +216,11 @@ public class ItemController {
             
             return new ModelAndView(new RedirectView("/food/list", true));
         }
-        DriverManagerDataSource ds;
-        ds = new DriverManagerDataSource();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-        ds.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
-        ds.setUrl("jdbc:derby://localhost:1527/food");
-        ds.setUsername("nbuser");
-        ds.setPassword("nbuser");
-        jdbcTemplate.update(
+        JdbcTemplate jt = jdbctempele();
+        jt.update(
           "INSERT INTO COMMENTS(foodid, username, body) VALUES (?, ?, ?)", itemId ,principal.getName(), form.getBody());
          String sqlSelect = "SELECT * FROM COMMENTS WHERE FOODID = "+itemId;
-        List<Comments> Commentslist = jdbcTemplate.query(sqlSelect,new CommentsMapper());
+        List<Comments> Commentslist = jt.query(sqlSelect,new CommentsMapper());
         for (Comments comment : Commentslist) {
          //   System.out.println("id = " + comment.getId());
           //   System.out.println("floor = " + comment.getFloor());
@@ -253,6 +236,63 @@ public class ItemController {
         model.addAttribute("item", item);
         return new ModelAndView("view", "CForm", new CForm());
         
+    }
+     @GetMapping("/item/edit/{itemId}")
+    public ModelAndView showEdit(@PathVariable("itemId") long itemId,
+            Principal principal, HttpServletRequest request) {
+        Item item = this.itemDatabase.get(itemId);
+        if (item == null
+                || (!request.isUserInRole("ROLE_ADMIN")
+               )) {
+            return new ModelAndView(new RedirectView("/item/list", true));
+        }
+        ModelAndView modelAndView = new ModelAndView("edit");
+        modelAndView.addObject("itemId", Long.toString(itemId));
+        modelAndView.addObject("item", item);
+
+        Form itemForm = new Form();
+        itemForm.setNoffood(item.getNoffood());
+        modelAndView.addObject("itemForm", itemForm);
+        return modelAndView;
+    }
+
+    @PostMapping("/item/edit/{itemId}")
+    public String edit(@PathVariable("itemId") long itemId, Form form,CForm Cform,
+            Principal principal, HttpServletRequest request, ModelMap model)
+            throws IOException {
+        Item item = this.itemDatabase.get(itemId);
+        if (item == null
+                || (!request.isUserInRole("ROLE_ADMIN")
+               )) {
+           //  return new ModelAndView(new RedirectView("/item/list", true));
+            return "redirect:/item/list";
+        }
+   
+        //item.setNoffood(form.getNoffood());
+        String sql = "UPDATE FOODLIST SET NOFFOOD = " +form.getNoffood() +" WHERE FOODID = "+itemId; 
+        JdbcTemplate jt = jdbctempele();
+        jt.update(sql);
+      
+     
+        //this.itemDatabase.put(item.getId(), item);
+        //return modelAndView;
+        return "redirect:/food/item/view/" + item.getId();
+    }
+    @GetMapping("/item/delete/{itemId}")
+    public String deleteTicket(@PathVariable("itemId") long itemId) {
+        JdbcTemplate jt = jdbctempele();
+        if (this.itemDatabase.containsKey(itemId)) {
+           String sql = "DELETE FROM FOODLIST WHERE FOODID = " + itemId;
+           String sql2 = "DELETE FROM COMMENTS WHERE FOODID = " + itemId;
+           
+           jt.update(sql2);
+           jt.update(sql);
+            this.itemDatabase.remove(itemId);
+        }
+        //return new ModelAndView(new RedirectView("/food/item",));
+        //return new RedirectView("");
+        return "delete";
+       //return "redirect:/food/item";
     }
     private synchronized long getNextItemId() {
         return this.ITEM_ID_SEQUENCE++;

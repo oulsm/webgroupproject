@@ -23,10 +23,10 @@
     <h2>Foodname: <c:out value="${item.foodname}" /></h2>
 
     <security:authorize access="hasRole('ADMIN')">
-        [<a href="<c:url value="/item/edit/${itemId}" />">Edit</a>]
+        [<a href="<c:url value="/food/item/edit/${itemId}" />">Edit</a>]
     </security:authorize>
     <security:authorize access="hasRole('ADMIN')">
-        [<a href="<c:url value="/item/delete/${itemId}" />">Delete</a>]
+        [<a href="<c:url value="/food/item/delete/${itemId}" />">Delete</a>]
     </security:authorize>   
     <br /><br />
     <i> Description: </i><br /><br />
@@ -74,7 +74,6 @@
     <security:authorize  access="isAuthenticated()">
         <form:form method="POST" enctype="multipart/form-data"
                    modelAttribute="CForm">
-            Name:<c:out value="${principal.username}" /><br />
             <form:label path="body">You can comment here: </form:label><br />
             <form:textarea path="body" rows="5" cols="30" /><br /><br />
             <input type="submit" value="Submit"/>

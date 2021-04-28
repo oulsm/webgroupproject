@@ -5,8 +5,12 @@
 </head>
 <body>
 <c:url var="logoutUrl" value="/logout"/>
-
+<security:authorize access="!isAuthenticated()">
 <h2>Sign up For the Ordering System</h2>
+</security:authorize>
+<security:authorize access="hasRole('ADMIN') ">
+    <h2>Create a new user by amin</h2>
+</security:authorize>
     <form:form method="POST" enctype="multipart/form-data"
                              modelAttribute="custdataForm">
           <form:label path="username">Username:</form:label><br />

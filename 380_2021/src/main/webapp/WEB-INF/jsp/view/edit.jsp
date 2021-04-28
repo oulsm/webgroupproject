@@ -9,27 +9,19 @@
     <input type="submit" value="Log out" />
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 </form>
-<h2>Ticket #${ticketId}</h2>
+
+<h2>Foodname: <c:out value="${item.foodname}" /></h2>
+<i> Description: </i><br /><br />
+    <c:out value="${item.description}" /><br /><br />
+
+    price of this food $<c:out value="${item.price}" />/one <br /><br />
+ 
     <form:form method="POST" enctype="multipart/form-data" 
-                             modelAttribute="ticketForm">
-        <form:label path="subject">Subject</form:label><br/>
-        <form:input type="text" path="subject" /><br/><br/>
-        <form:label path="body">Body</form:label><br/>
-        <form:textarea path="body" rows="5" cols="30" /><br/><br/>
-        <c:if test="${ticket.numberOfAttachments > 0}">
-            <b>Attachments:</b><br/>
-            <ul>
-                <c:forEach items="${ticket.attachments}" var="attachment">
-                    <li>
-                        <c:out value="${attachment.name}" />
-                        [<a href="<c:url value="/ticket/${ticketId}/delete/${attachment.name}" />">Delete</a>]
-                    </li>
-                </c:forEach>
-            </ul>
-        </c:if>
-        <b>Add attachments</b><br />
-        <input type="file" name="attachments" multiple="multiple"/><br/><br/>
+                             modelAttribute="itemForm">
+        <form:label path="noffood">availabity of this food :</form:label>
+        <form:input type="text" path="noffood" /><br/><br/>
         <input type="submit" value="Save"/>
     </form:form>
+          <a href="<c:url value="/food/item" />">Return to list of foods</a>
 </body>
 </html>

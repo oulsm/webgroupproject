@@ -11,29 +11,37 @@ import java.util.Map;
 public class Register implements Serializable {
 
     private String username;
+    private String password;
+     private Long phonenumber;
+    private String fullname;
+     private String delivery_address;
+    //private Map<String, Custdata> data = new Hashtable<>();
+     private Long id;
 
-    public String getUsername() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+ 
+public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
-    private String password;
-     private String phonenumber;
-    private String fullname;
-     private String delivery_address;
-    //private Map<String, Custdata> data = new Hashtable<>();
 
- 
-
-    public String getPhonenumber() {
+    public Long getPhonenumber() {
         return phonenumber;
     }
 
-    public void setPhonenumber(String phonenumber) {
+    public void setPhonenumber(Long phonenumber) {
         this.phonenumber = phonenumber;
     }
+   
 
     public String getFullname() {
         return fullname;

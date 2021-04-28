@@ -11,7 +11,7 @@ public class Item implements Serializable {
     private String foodname;
     private String description;
     private Double price;
-    private long noffood;
+    private Long noffood;
     private Map<String, Comments> comments = new Hashtable<>();
     private Map<String, Attachment> attachments = new Hashtable<>();
 

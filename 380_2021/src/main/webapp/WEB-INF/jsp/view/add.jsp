@@ -24,5 +24,6 @@
         <input type="file" name="attachments" multiple="multiple" /><br /><br />
         <input type="submit" value="Submit"/>
     </form:form>
+          <a href="<c:url value="/food/item" />">Return to list of foods</a>
 </body>
 </html>
