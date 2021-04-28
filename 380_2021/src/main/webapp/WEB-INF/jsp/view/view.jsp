@@ -20,20 +20,44 @@
         </form>
         <a href="<c:url value="/register/1" />">Sign up</a><br /><br />
     </security:authorize>
+         <c:if test="${gotocart == true}">
+            <p>You have put the food in your shopping cart. you can return to the <a href="<c:url value="/food/item" />">list</a> or
+            go to . 
+            </p> 
+            
+        </c:if>
     <h2>Foodname: <c:out value="${item.foodname}" /></h2>
-
     <security:authorize access="hasRole('ADMIN')">
         [<a href="<c:url value="/food/item/edit/${itemId}" />">Edit</a>]
     </security:authorize>
     <security:authorize access="hasRole('ADMIN')">
         [<a href="<c:url value="/food/item/delete/${itemId}" />">Delete</a>]
     </security:authorize>   
-    <br /><br />
+    <br />
     <i> Description: </i><br /><br />
-    <c:out value="${item.description}" /><br /><br />
-
+    <c:out value="${item.description}" /><br />
     price of this food $<c:out value="${item.price}" />/one <br /><br />
-    availabity of this food : <c:out value="${item.noffood}" /><br /><br />
+    <c:choose>
+        <c:when test="${item.noffood == 0}">
+            <i> Sorry! The food is no available for ordering. </i>
+        </c:when>
+        <c:otherwise>
+    Quantity : <c:out value="${item.noffood}" /><br />
+    <security:authorize access="isAuthenticated()">
+    <form:form method="POST" enctype="multipart/form-data" 
+                             modelAttribute="CForm">
+        <form:label path="noffood">You want to buy:</form:label>
+        <form:input type="number" path="noffood" min="1"  max = "${item.noffood}" /><br/><br/>
+        <input type="submit" value="Put into the cart"/>
+        
+    </form:form>
+        </security:authorize>
+    <security:authorize access="isAuthenticated()">
+        Sorry! You need to login to buy this item~
+    </security:authorize>
+        </c:otherwise>
+    </c:choose>
+    <br />
 
     Comments:<br/><br/>
 
@@ -53,18 +77,14 @@
     </c:if>
     <c:choose>
         <c:when test="${fn:length(commentDatabase) == 0}">
-            <i>There are no comments in this food.</i>
+            <i>There are no comments of this food.</i>
         </c:when>
         <c:otherwise>
             <c:forEach items="${commentDatabase}" var="entry">
                 User-<c:out value="${entry.value.username}" /><br />
                 Comment:<c:out value="${entry.value.body}" />
-
-                <security:authorize access="hasRole('ADMIN') ">
-                    [<a href="<c:url value="/food/item/edit/${entry.key}" />">Edit</a>]
-                </security:authorize>
                 <security:authorize access="hasRole('ADMIN')">
-                    [<a href="<c:url value="/food/item/delete/${entry.key}" />">Delete</a>]<br />
+                    [<a href="<c:url value="/food/comment/delete/${itemId}/${entry.key}" />">Delete</a>]<br />
                 </security:authorize>
                 <br /><br />
             </c:forEach>

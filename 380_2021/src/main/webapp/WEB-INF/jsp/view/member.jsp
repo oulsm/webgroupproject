@@ -29,7 +29,7 @@
         <form:label path="fullname">Fullname:</form:label><br />
         <form:input type="text" path="fullname" /><br /><br />
         <form:label path="phonenumber">Phone Number:</form:label><br />
-        <form:input type="text" path="phonenumber" /><br /><br />
+        <form:input type="number" path="phonenumber" /><br /><br />
         <form:label path="delivery_address">Delivery Address:</form:label><br />
         <form:input type="text" path="delivery_address" /><br /><br />
         <input type="submit" value="Save"/>
@@ -38,7 +38,8 @@
         <a href="<c:url value="/admin" />">Return to memberlist</a>
     </security:authorize>
     <security:authorize access="principal.username=='${member.username}' ">
-        <a href="<c:url value="/food/item" />">Return to list of foods</a>
+        <a href="<c:url value="/food/item" />">Return to list of foods</a><br/>
+        <a href="<c:url value="/member/home/${member.username}" />">Return to member home page</a>
     </security:authorize>
 </body>
 </html>

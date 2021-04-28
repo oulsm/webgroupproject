@@ -16,7 +16,7 @@ CREATE TABLE user_roles (
     role VARCHAR(50) NOT NULL,
     PRIMARY KEY (user_role_id),
     FOREIGN KEY (userid) REFERENCES users(userid)
-);
+);  
 CREATE TABLE shopcart (
     cartid INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
     userid INTEGER NOT NULL,

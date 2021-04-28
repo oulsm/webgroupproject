@@ -6,6 +6,7 @@
         <title>DELETE</title>
     </head>
     <body>
+        
         You have deleted the food now!<br/>
          <a href="<c:url value="/food/item" />">Return to list of foods</a>
     </body>

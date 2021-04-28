@@ -20,7 +20,7 @@
           <form:label path="fullname">Fullname:</form:label><br />
         <form:input type="text" path="fullname" /><br /><br />
            <form:label path="phonenumber">Phone Number:</form:label><br />
-        <form:input type="text" path="phonenumber" /><br /><br />
+        <form:input type="number" path="phonenumber" /><br /><br />
            <form:label path="delivery_address">Delivery Address:</form:label><br />
         <form:input type="text" path="delivery_address" /><br /><br />
         <input type="submit" value="Submit"/>

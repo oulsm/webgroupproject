@@ -99,7 +99,7 @@ public class AdminController {
         String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
         List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
         for (Register lists : memberlist) {
-         //   System.out.println("id = " + lists.getId());
+         //System.out.println("id = " + lists.getId());
            // System.out.println("foodname" + lists.getFoodname());
             this.memberDatabase.put(lists.getId(), lists);
         }
@@ -142,7 +142,8 @@ public class AdminController {
         Register member = this.memberDatabase.get(memberId);
    
         //member.setNoffood(form.getNoffood());
-        if(  (!request.isUserInRole("ROLE_ADMIN"))){ 
+        if
+                (  (!request.isUserInRole("ROLE_ADMIN"))){ 
             JdbcTemplate jt = jdbctempele();
           
             String sql = "UPDATE USERS SET PASSWORD = '" +form.getPassword() +
@@ -167,7 +168,7 @@ public class AdminController {
             jt.update(sql1);
             jt.update(sql2);
         }
-        ; 
+         
       
         
       

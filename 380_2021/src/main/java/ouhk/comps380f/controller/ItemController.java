@@ -24,11 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
+import ouhk.comps380f.mapper.RegisterMapper;
+import ouhk.comps380f.mapper.ShopcartMapper;
 import ouhk.comps380f.model.Attachment;
 import ouhk.comps380f.model.Comments;
 import ouhk.comps380f.model.Item;
 import ouhk.comps380f.model.Register;
-
+import ouhk.comps380f.model.Shopcart;
 
 @Controller
 @RequestMapping("/food")
@@ -36,8 +38,12 @@ public class ItemController {
 
     private volatile long ITEM_ID_SEQUENCE = 1;
     private Map<Long, Item> itemDatabase = new Hashtable<>();
-  
-public JdbcTemplate jdbctempele(){
+    private Map<Long, Register> memberDatabase = new Hashtable<>();
+    private Map<Long, Shopcart> cartDatabase = new Hashtable<>();
+    private Long memberId;
+    private Boolean gotocart;
+
+    public JdbcTemplate jdbctempele() {
         DriverManagerDataSource ds;
         ds = new DriverManagerDataSource();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
@@ -46,37 +52,6 @@ public JdbcTemplate jdbctempele(){
         ds.setUsername("nbuser");
         ds.setPassword("nbuser");
         return jdbcTemplate;
-}
-    @GetMapping(value = {"", "/item"})
-    public String list(ModelMap model) {
-      
-       JdbcTemplate jt = jdbctempele();
-        String sqlSelect = "SELECT * FROM FOODLIST ORDER BY FOODID";
-        List<Item> Itemlist = jt.query(sqlSelect, new ItemMapper());
-        for (Item lists : Itemlist) {
-         //   System.out.println("id = " + lists.getId());
-           // System.out.println("foodname" + lists.getFoodname());
-            this.itemDatabase.put(lists.getId(), lists);
-        }
-        //System.out.println("map" + itemDatabase);
-        //this.itemDatabase.put(lists.getId(), lists);
-
-        // jdbcTemplate.queryForObject("SELECT * FROM FOODLIST","",itemDatabase );
-        model.addAttribute("itemDatabase", itemDatabase);
-        return "list";
-    }
-
-    @PostMapping(value = {"/login","/item/view/login"})
-    public ModelAndView login() {
-        return new ModelAndView(new RedirectView("/login", true));
-    }
-
-    //  private volatile long ITEM_ID_SEQUENCE = 1;
-    // private Map<Long, Ticket> itemDatabase = new Hashtable<>();
-    @GetMapping("/create")
-    public ModelAndView create() {
-
-        return new ModelAndView("add", "itemForm", new Form());
     }
 
     public static class Form {
@@ -119,7 +94,6 @@ public JdbcTemplate jdbctempele(){
             this.noffood = noffood;
         }
 
-
         public List<MultipartFile> getAttachments() {
             return attachments;
         }
@@ -131,11 +105,17 @@ public JdbcTemplate jdbctempele(){
 
     public static class CForm {
 
-    private String username;
-    private String body;
+        private Long noffood;
+        private String username;
+        private String body;
 
+        public Long getNoffood() {
+            return noffood;
+        }
 
- 
+        public void setNoffood(Long noffood) {
+            this.noffood = noffood;
+        }
 
         public String getBody() {
             return body;
@@ -145,7 +125,39 @@ public JdbcTemplate jdbctempele(){
             this.body = body;
         }
 
-       
+    }
+
+    @GetMapping(value = {"", "/item"})
+    public String list(ModelMap model, Principal principal, HttpServletRequest request) {
+
+        JdbcTemplate jt = jdbctempele();
+        String sqlSelect = "SELECT * FROM FOODLIST ORDER BY FOODID";
+        List<Item> Itemlist = jt.query(sqlSelect, new ItemMapper());
+        for (Item lists : Itemlist) {
+            //   System.out.println("id = " + lists.getId());
+            // System.out.println("foodname" + lists.getFoodname());
+            this.itemDatabase.put(lists.getId(), lists);
+        }
+        // ModelAndView modelAndView = new ModelAndView("list");
+        // modelAndView.addObject("principal", principal.getName());
+        if ((request.isUserInRole("ROLE_USER"))) {
+            model.addAttribute("principal", principal.getName());
+        }
+        model.addAttribute("itemDatabase", itemDatabase);
+        return "list";
+    }
+
+    @PostMapping(value = {"/login", "/item/view/login"})
+    public ModelAndView login() {
+        return new ModelAndView(new RedirectView("/login", true));
+    }
+
+    //  private volatile long ITEM_ID_SEQUENCE = 1;
+    // private Map<Long, Ticket> itemDatabase = new Hashtable<>();
+    @GetMapping("/create")
+    public ModelAndView create() {
+
+        return new ModelAndView("add", "itemForm", new Form());
     }
 
     @PostMapping("/create")
@@ -163,6 +175,7 @@ public JdbcTemplate jdbctempele(){
             }
         }
         JdbcTemplate jt = jdbctempele();
+
         jt.update(
                 "INSERT INTO FOODLIST(foodname, description, price, noffood) VALUES (?, ?, ?, ?)", form.getFoodname(), form.getDescription(), form.getPrice(), form.getNoffood());
 
@@ -174,76 +187,123 @@ public JdbcTemplate jdbctempele(){
 
     @GetMapping("/item/view/{itemId}")
     public ModelAndView view(@PathVariable("itemId") long itemId,
-            ModelMap model) {
+            ModelMap model,HttpServletRequest request, Principal principal) {
         Map<Long, Comments> commentDatabase = new Hashtable<>();
         Item item = this.itemDatabase.get(itemId);
         if (item == null) {
-            
+
             return new ModelAndView(new RedirectView("/food/list", true));
         }
         
-        
         JdbcTemplate jt = jdbctempele();
-        String sqlSelect = "SELECT * FROM COMMENTS WHERE FOODID = "+itemId;
-        List<Comments> Commentslist = jt.query(sqlSelect,new CommentsMapper());
+        String sqlSelect = "SELECT * FROM COMMENTS WHERE FOODID = " + itemId;
+        List<Comments> Commentslist = jt.query(sqlSelect, new CommentsMapper());
         for (Comments comment : Commentslist) {
-            System.out.println("id = " + comment.getId());
-             System.out.println("floor = " + comment.getFloor());
-            System.out.println("username" + comment.getUsername());
-             System.out.println("body" + comment.getBody());
             commentDatabase.put(comment.getFloor(), comment);
-               for (Object key : commentDatabase.keySet()) {
-            System.out.println(key + " : " + commentDatabase.get(key));
         }
-        }
-      
-     
+
         // System.out.println(commentDatabase);
-        model.addAttribute("commentDatabase",commentDatabase );
-        
+         if ((request.isUserInRole("ROLE_USER"))) {
+            model.addAttribute("member", principal.getName());
+        }
+        model.addAttribute("commentDatabase", commentDatabase);
+
         model.addAttribute("itemId", itemId);
         model.addAttribute("item", item);
         return new ModelAndView("view", "CForm", new CForm());
-        
+
     }
-    
- @PostMapping("/item/view/{itemId}")
-    public ModelAndView viewinsert(@PathVariable("itemId") long itemId,CForm form, Principal principal,
-            ModelMap model) {
-         Map<Long, Comments> commentDatabase = new Hashtable<>();
+
+    @PostMapping("/item/view/{itemId}")
+    public ModelAndView viewinsert(@PathVariable("itemId") long itemId, CForm form, Principal principal,
+            HttpServletRequest request, ModelMap model) {
+        Map<Long, Comments> commentDatabase = new Hashtable<>();
+        this.gotocart = false;
+
         Item item = this.itemDatabase.get(itemId);
         if (item == null) {
-            
             return new ModelAndView(new RedirectView("/food/list", true));
         }
         JdbcTemplate jt = jdbctempele();
-        jt.update(
-          "INSERT INTO COMMENTS(foodid, username, body) VALUES (?, ?, ?)", itemId ,principal.getName(), form.getBody());
-         String sqlSelect = "SELECT * FROM COMMENTS WHERE FOODID = "+itemId;
-        List<Comments> Commentslist = jt.query(sqlSelect,new CommentsMapper());
+        if (form.getNoffood() == null) {
+            jt.update(
+                    "INSERT INTO COMMENTS(foodid, username, body) VALUES (?, ?, ?)", itemId, principal.getName(), form.getBody());
+            String sqlSelect = "SELECT * FROM COMMENTS WHERE FOODID = " + itemId;
+            List<Comments> Commentslist = jt.query(sqlSelect, new CommentsMapper());
+            for (Comments comment : Commentslist) {
+                //   System.out.println("id = " + comment.getId());
+                //   System.out.println("floor = " + comment.getFloor());
+                // System.out.println("username" + comment.getUsername());
+                // System.out.println("body" + comment.getBody());
+                commentDatabase.put(comment.getFloor(), comment);
+                //     for (Object key : commentDatabase.keySet()) {
+                // System.out.println(key + " : " + commentDatabase.get(key));
+                //}
+            }
+        } else {
+            // JdbcTemplate jt = jdbctempele();
+            String sqlSelect = "SELECT* FROM users WHERE username ='" + principal.getName() + "'";
+            List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
+            for (Register lists : memberlist) {
+                System.out.println("id = " + lists.getId());
+                System.out.println("membername" + lists.getUsername());
+                this.memberDatabase.put(lists.getId(), lists);
+                this.memberId = lists.getId();
+         
+            }
+            Register member = memberDatabase.get(memberId);
+            String sqlSelect2 = "SELECT * FROM SHOPCART ";
+            List<Shopcart> Shopcartlist = jt.query(sqlSelect2, new ShopcartMapper());
+            for (Shopcart cart : Shopcartlist) {
+                cartDatabase.put(cart.getCartid(), cart);
+            }
+            Boolean shopupdate = false;
+            for (Object cart : cartDatabase.keySet()) {
+                System.out.println("fcart foodid = " + cartDatabase.get(cart).getFoodid());
+
+                System.out.println("fcart userid = " + cartDatabase.get(cart).getUserid());
+
+                if (cartDatabase.get(cart).getFoodid() == itemId && cartDatabase.get(cart).getUserid() == member.getId()) {
+                    String sqlupdate = "UPDATE SHOPCART SET noffood = "
+                            + (form.getNoffood() + cartDatabase.get(cart).getNoffood())
+                            + " WHERE FOODID = " + itemId
+                            + "AND USERID =" + member.getId();
+                    jt.update(sqlupdate);
+                    shopupdate = true;
+                }
+            }
+
+            if (!shopupdate) {
+                jt.update(
+                        "INSERT INTO SHOPCART(userid , username , foodid, foodname, noffood, price) VALUES (?, ?, ?, ?, ?, ?)",
+                        member.getId(), principal.getName(), itemId, item.getFoodname(), form.getNoffood(), item.getPrice());
+            }
+           
+      
+        String sqlSelect3 = "SELECT * FROM COMMENTS WHERE FOODID = " + itemId;
+        List<Comments> Commentslist = jt.query(sqlSelect3, new CommentsMapper());
         for (Comments comment : Commentslist) {
-         //   System.out.println("id = " + comment.getId());
-          //   System.out.println("floor = " + comment.getFloor());
-           // System.out.println("username" + comment.getUsername());
-            // System.out.println("body" + comment.getBody());
             commentDatabase.put(comment.getFloor(), comment);
-          //     for (Object key : commentDatabase.keySet()) {
-           // System.out.println(key + " : " + commentDatabase.get(key));
-        //}
         }
-        model.addAttribute("commentDatabase",commentDatabase );
+            model.addAttribute("gotocart", true);
+        }
+        
+        model.addAttribute("commentDatabase", commentDatabase);
         model.addAttribute("itemId", itemId);
         model.addAttribute("item", item);
+        if ((request.isUserInRole("ROLE_USER"))) {
+            model.addAttribute("member", principal.getName());
+        }
         return new ModelAndView("view", "CForm", new CForm());
-        
+
     }
-     @GetMapping("/item/edit/{itemId}")
+
+    @GetMapping("/item/edit/{itemId}")
     public ModelAndView showEdit(@PathVariable("itemId") long itemId,
             Principal principal, HttpServletRequest request) {
         Item item = this.itemDatabase.get(itemId);
         if (item == null
-                || (!request.isUserInRole("ROLE_ADMIN")
-               )) {
+                || (!request.isUserInRole("ROLE_ADMIN"))) {
             return new ModelAndView(new RedirectView("/item/list", true));
         }
         ModelAndView modelAndView = new ModelAndView("edit");
@@ -252,48 +312,81 @@ public JdbcTemplate jdbctempele(){
 
         Form itemForm = new Form();
         itemForm.setNoffood(item.getNoffood());
+        itemForm.setDescription(item.getDescription());
+        itemForm.setPrice(item.getPrice());
+        itemForm.setFoodname(item.getFoodname() );;
         modelAndView.addObject("itemForm", itemForm);
         return modelAndView;
     }
 
     @PostMapping("/item/edit/{itemId}")
-    public String edit(@PathVariable("itemId") long itemId, Form form,CForm Cform,
+    public String edit(@PathVariable("itemId") long itemId, Form form, CForm Cform,
             Principal principal, HttpServletRequest request, ModelMap model)
             throws IOException {
         Item item = this.itemDatabase.get(itemId);
         if (item == null
-                || (!request.isUserInRole("ROLE_ADMIN")
-               )) {
-           //  return new ModelAndView(new RedirectView("/item/list", true));
+                || (!request.isUserInRole("ROLE_ADMIN"))) {
+            //  return new ModelAndView(new RedirectView("/item/list", true));
             return "redirect:/item/list";
         }
-   
+
         //item.setNoffood(form.getNoffood());
-        String sql = "UPDATE FOODLIST SET NOFFOOD = " +form.getNoffood() +" WHERE FOODID = "+itemId; 
+        String sql = "UPDATE FOODLIST SET NOFFOOD = " + form.getNoffood() + 
+                ", DESCRiPTION = '"+ form.getDescription() +
+                "', FOODNAME = '"+ form.getFoodname() +
+                "', PRICE ="+ form.getPrice() +
+                " WHERE FOODID = " + itemId;
         JdbcTemplate jt = jdbctempele();
         jt.update(sql);
-      
-     
-        //this.itemDatabase.put(item.getId(), item);
+         for (Object cart : cartDatabase.keySet()) {
+             this.itemDatabase.remove(cart);
+         }
+         String sqlSelect = "SELECT * FROM FOODLIST ORDER BY FOODID";
+        List<Item> Itemlist = jt.query(sqlSelect, new ItemMapper());
+        for (Item lists : Itemlist) {
+            //   System.out.println("id = " + lists.getId());
+            // System.out.println("foodname" + lists.getFoodname());
+            this.itemDatabase.put(lists.getId(), lists);
+        }
         //return modelAndView;
         return "redirect:/food/item/view/" + item.getId();
     }
+
     @GetMapping("/item/delete/{itemId}")
     public String deleteTicket(@PathVariable("itemId") long itemId) {
         JdbcTemplate jt = jdbctempele();
         if (this.itemDatabase.containsKey(itemId)) {
-           String sql = "DELETE FROM FOODLIST WHERE FOODID = " + itemId;
-           String sql2 = "DELETE FROM COMMENTS WHERE FOODID = " + itemId;
-           
-           jt.update(sql2);
-           jt.update(sql);
+            String sql = "DELETE FROM FOODLIST WHERE FOODID = " + itemId;
+            String sql2 = "DELETE FROM COMMENTS WHERE FOODID = " + itemId;
+
+            jt.update(sql2);
+            jt.update(sql);
             this.itemDatabase.remove(itemId);
         }
         //return new ModelAndView(new RedirectView("/food/item",));
         //return new RedirectView("");
         return "delete";
-       //return "redirect:/food/item";
+        //return "redirect:/food/item";
     }
+     @GetMapping("/comment/delete/{itemId}/{floor}")
+    public String deleteTicket(@PathVariable("itemId") long itemId,@PathVariable("floor") long floor) {
+        JdbcTemplate jt = jdbctempele();
+        if (this.itemDatabase.containsKey(itemId)) {
+           // String sql = "DELETE FROM FOODLIST WHERE FOODID = " + itemId;
+            String sql2 = "DELETE FROM COMMENTS WHERE FOODID = " + itemId + "AND FLOOR = " + floor;
+
+            jt.update(sql2);
+           // jt.update(sql);
+        }
+        //return new ModelAndView(new RedirectView("/food/item",));
+        //return new RedirectView("");
+        
+        
+       // return "redirect:/food/item/view/" + itemId;
+        return "delete";
+        //return "redirect:/food/item";
+    }
+
     private synchronized long getNextItemId() {
         return this.ITEM_ID_SEQUENCE++;
     }

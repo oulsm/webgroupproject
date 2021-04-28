@@ -9,14 +9,15 @@ import java.util.Hashtable;
 import java.util.Map;
 
 public class Register implements Serializable {
-
+    
+    private Long id;
     private String username;
     private String password;
      private Long phonenumber;
     private String fullname;
      private String delivery_address;
     //private Map<String, Custdata> data = new Hashtable<>();
-     private Long id;
+     
 
     public Long getId() {
         return id;

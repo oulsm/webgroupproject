@@ -17,9 +17,9 @@
         <form:label path="description">Description: </form:label><br />
         <form:textarea path="description" rows="5" cols="30" /><br /><br />
         <form:label path="price">Price:</form:label><br />
-        <form:input type="text" path="price" /><br /><br />
-        <form:label path="noffood">No. of this food can be sold</form:label><br />
-        <form:input type="number" path="noffood" /><br /><br />
+         <form:input type="number" path="price" step="0.01" min = "0" /><br /><br />
+        <form:label path="noffood">Quantity :</form:label><br />
+        <form:input type="number" path="noffood" min="1" /><br /><br />
         <b>Attachments</b><br />
         <input type="file" name="attachments" multiple="multiple" /><br /><br />
         <input type="submit" value="Submit"/>
