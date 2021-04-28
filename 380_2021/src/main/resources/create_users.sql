@@ -5,7 +5,6 @@ CREATE TABLE users (
     fullname VARCHAR(50) ,
     phonenumber INT ,
     delivery_address VARCHAR(50) ,
-
     PRIMARY KEY (userid)
 );
 
@@ -18,6 +17,19 @@ CREATE TABLE user_roles (
     PRIMARY KEY (user_role_id),
     FOREIGN KEY (userid) REFERENCES users(userid)
 );
+CREATE TABLE shopcart (
+    cartid INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    userid INTEGER NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    foodid INTEGER NOT NULL,
+    foodname VARCHAR(50) NOT NULL,
+    noffood INT NOT NULL,
+    price DOUBLE NOT NULL,
+    PRIMARY KEY (cartid),
+    FOREIGN KEY (foodid) REFERENCES foodlist(foodid),
+    FOREIGN KEY (userid) REFERENCES users(userid)
+);
+
 
 INSERT INTO users VALUES ('keith', '{noop}keithpw');
 INSERT INTO user_roles(username, role) VALUES ('keith', 'ROLE_USER');
@@ -41,7 +53,7 @@ CREATE TABLE comments (
     foodid INTEGER NOT NULL ,
     floor INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
     username VARCHAR(50) NOT NULL,
-    comment VARCHAR(300) NOT NULL,
+    body VARCHAR(300) NOT NULL,
     PRIMARY KEY (floor),
     FOREIGN KEY (foodid) REFERENCES foodlist(foodid)
 );
