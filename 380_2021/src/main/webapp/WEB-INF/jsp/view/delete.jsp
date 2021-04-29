@@ -6,8 +6,21 @@
         <title>DELETE</title>
     </head>
     <body>
-        
-        You have deleted the food now!<br/>
+               <security:authorize access="isAuthenticated()">
+            <c:url var="logoutUrl" value="/logout"/>
+            <form action="${logoutUrl}" method="post">
+                <input type="submit" value="Log out" />
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>    
+            </form>
+        </security:authorize>   
+          <c:if test="${delete == 1}">
+         You have deleted the food now!<br/>
          <a href="<c:url value="/food/item" />">Return to list of foods</a>
+        </c:if>
+              <c:if test="${delete == 2}">
+            You have deleted the comment now!
+            Return to the the <a href="<c:url value="/food/item/view/${itemId}" />">item page</a>
+        </c:if>
+       
     </body>
 </html>

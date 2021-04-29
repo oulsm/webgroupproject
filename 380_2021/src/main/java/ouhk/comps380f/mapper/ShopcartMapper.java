@@ -11,10 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import ouhk.comps380f.model.Shopcart;
 import ouhk.comps380f.model.Shopcart;
 
-/**
- *
- * @author Timlui
- */
+
 public class ShopcartMapper implements RowMapper<Shopcart> {
 
     public Shopcart mapRow(ResultSet result, int rowNum) throws SQLException {

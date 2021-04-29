@@ -19,7 +19,7 @@
         <form:label path="price">Price:</form:label><br />
          <form:input type="number" path="price" step="0.01" min = "0" /><br /><br />
         <form:label path="noffood">Quantity :</form:label><br />
-        <form:input type="number" path="noffood" min="1" /><br /><br />
+        <form:input type="number" path="noffood" min="0" /><br /><br />
         <b>Attachments</b><br />
         <input type="file" name="attachments" multiple="multiple" /><br /><br />
         <input type="submit" value="Submit"/>

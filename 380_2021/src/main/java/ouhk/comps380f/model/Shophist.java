@@ -1,14 +1,20 @@
-
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package ouhk.comps380f.model;
 
-public class Shopcart {
-    private long cartid;
+
+public class Shophist {
+     private long cartid;
     private long foodid;
     private long userid;
     private String username;
     private String foodname;
     private Double price;
     private Long noffood;
+    private String orderdate;
 
     public long getCartid() {
         return cartid;
@@ -65,5 +71,15 @@ public class Shopcart {
     public void setNoffood(Long noffood) {
         this.noffood = noffood;
     }
+
+    public String getOrderdate() {
+        return orderdate;
+    }
+
+    public void setOrderdate(String orderdate) {
+        this.orderdate = orderdate;
+    }
+    
+    
     
 }

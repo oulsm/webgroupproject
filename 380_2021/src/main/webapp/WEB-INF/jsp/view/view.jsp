@@ -22,24 +22,36 @@
     </security:authorize>
          <c:if test="${gotocart == true}">
             <p>You have put the food in your shopping cart. you can return to the <a href="<c:url value="/food/item" />">list</a> or
-            go to . 
+            go to  <a href="<c:url value="/member/shopping/${member}" />">your shoppping cart</a>. 
             </p> 
-            
         </c:if>
-    <h2>Foodname: <c:out value="${item.foodname}" /></h2>
+            <c:if test="${addfav == true}">
+            <p>You have put the food in your favorite. You can return to the <a href="<c:url value="/food/item" />">list</a> or
+            go to  <a href="<c:url value="/member/favorite/${member}" />">your favorite list</a>. 
+            </p> 
+        </c:if>
+    <h2>Foodname: <c:out value="${item.foodname}" />
     <security:authorize access="hasRole('ADMIN')">
         [<a href="<c:url value="/food/item/edit/${itemId}" />">Edit</a>]
     </security:authorize>
     <security:authorize access="hasRole('ADMIN')">
         [<a href="<c:url value="/food/item/delete/${itemId}" />">Delete</a>]
     </security:authorize>   
+        </h2>
     <br />
-    <i> Description: </i><br /><br />
-    <c:out value="${item.description}" /><br />
+     <security:authorize access="hasRole('USER')">
+    <form:form method="POST"  modelAttribute="CForm">
+    <form:input type="hidden" path ="fav"/>
+     <input type="submit" value="Put in the favorite menu"/>
+    </form:form>    
+    </security:authorize>   
+    
+    <i> Description: </i><br />
+    <c:out value="${item.description}" /><br/><br/>
     price of this food $<c:out value="${item.price}" />/one <br /><br />
     <c:choose>
         <c:when test="${item.noffood == 0}">
-            <i> Sorry! The food is no available for ordering. </i>
+            <i> Sorry! The food is no available for ordering. </i><br/>
         </c:when>
         <c:otherwise>
     Quantity : <c:out value="${item.noffood}" /><br />
@@ -52,7 +64,7 @@
         
     </form:form>
         </security:authorize>
-    <security:authorize access="isAuthenticated()">
+    <security:authorize access="!isAuthenticated()">
         Sorry! You need to login to buy this item~
     </security:authorize>
         </c:otherwise>

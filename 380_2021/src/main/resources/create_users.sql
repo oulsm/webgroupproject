@@ -29,7 +29,26 @@ CREATE TABLE shopcart (
     FOREIGN KEY (foodid) REFERENCES foodlist(foodid),
     FOREIGN KEY (userid) REFERENCES users(userid)
 );
-
+CREATE TABLE shophist (
+    cartid INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    userid INTEGER NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    foodid INTEGER NOT NULL,
+    foodname VARCHAR(50) NOT NULL,
+    noffood INT NOT NULL,
+    price DOUBLE NOT NULL,
+    orderdate timestamp default CURRENT_TIMESTAMP,
+    PRIMARY KEY (cartid)
+);
+CREATE TABLE favorite(
+    cartid INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    userid INTEGER NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    foodid INTEGER NOT NULL,
+    foodname VARCHAR(50) NOT NULL,
+    price DOUBLE NOT NULL,
+    PRIMARY KEY (cartid)
+);
 
 INSERT INTO users VALUES ('keith', '{noop}keithpw');
 INSERT INTO user_roles(username, role) VALUES ('keith', 'ROLE_USER');
@@ -52,9 +71,11 @@ CREATE TABLE foodlist (
 CREATE TABLE comments (
     foodid INTEGER NOT NULL ,
     floor INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    userid INTEGER NOT NULL,
     username VARCHAR(50) NOT NULL,
     body VARCHAR(300) NOT NULL,
     PRIMARY KEY (floor),
+    FOREIGN KEY (userid) REFERENCES users(userid),
     FOREIGN KEY (foodid) REFERENCES foodlist(foodid)
 );
 

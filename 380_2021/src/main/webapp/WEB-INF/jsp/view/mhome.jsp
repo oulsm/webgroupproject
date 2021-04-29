@@ -16,7 +16,9 @@
             </form>
         </security:authorize>
   <h2>Member name: <c:out value="${member.username}" />  [<a href="<c:url value="/member/edit/${member.username}" />">Edit</a>]</h2>  <br />
-  <a href="<c:url value="/member/shopcart/${member.username}" />">Your shopping cart</a><br /><br />
+  <a href="<c:url value="/member/shopcart/${member.username}" />">Your shopping cart</a> &nbsp; and   &nbsp;
+  <a href="<c:url value="/member/favorite/${member.username}" />">Your favorite meun</a> &nbsp; and &nbsp;
+ <a href="<c:url value="/member/history/${member.username}" />">Your shopping history</a>   <br /><br />
   
    Password:<c:out value="${member.password}" /><br /><br />
    Fullname:<c:out value="${member.fullname}" /><br /><br />

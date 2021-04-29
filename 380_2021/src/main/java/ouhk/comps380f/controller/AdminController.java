@@ -114,7 +114,14 @@ public class AdminController {
     public ModelAndView showEdit(@PathVariable("memberId") long memberId,
             Principal principal, HttpServletRequest request, ModelMap model) {
         // Map<Long, Register> userDatabase = new Hashtable<>();  
-         
+         JdbcTemplate jt = jdbctempele();
+        String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
+        List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
+        for (Register lists : memberlist) {
+         //System.out.println("id = " + lists.getId());
+           // System.out.println("foodname" + lists.getFoodname());
+            this.memberDatabase.put(lists.getId(), lists);
+        }
         Register member = memberDatabase.get(memberId);
         if (member == null
                 || (!request.isUserInRole("ROLE_ADMIN")
@@ -139,12 +146,20 @@ public class AdminController {
     public String edit(@PathVariable("memberId") long memberId, AdminController.Form form,
             Principal principal, HttpServletRequest request, ModelMap model)
             throws IOException {
+        JdbcTemplate jt = jdbctempele();
+        String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
+        List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
+        for (Register lists : memberlist) {
+         //System.out.println("id = " + lists.getId());
+           // System.out.println("foodname" + lists.getFoodname());
+            this.memberDatabase.put(lists.getId(), lists);
+        }
         Register member = this.memberDatabase.get(memberId);
    
         //member.setNoffood(form.getNoffood());
         if
                 (  (!request.isUserInRole("ROLE_ADMIN"))){ 
-            JdbcTemplate jt = jdbctempele();
+    
           
             String sql = "UPDATE USERS SET PASSWORD = '" +form.getPassword() +
             "',  FULLNAME ='" +form.getFullname()+ 
@@ -156,7 +171,7 @@ public class AdminController {
         
         }
         else{
-         JdbcTemplate jt = jdbctempele();
+
            String sql1 = "UPDATE USER_ROLES SET USERNAME = '" +form.getUsername()+ 
             "' WHERE userid = "+memberId;
             String sql2 = "UPDATE USERS SET USERNAME ='"+form.getUsername()+ 
@@ -165,6 +180,18 @@ public class AdminController {
             "', PHONENUMBER ="+ form.getPhonenumber() +
             ", DELIVERY_ADDRESS = '"+form.getDelivery_address() + 
             "' WHERE userid = "+memberId;
+            String sql6 = "UPDATE COMMENTS SET USERNAME = '" +form.getUsername()+ 
+            "' WHERE userid = "+memberId;
+             String sql3 = "UPDATE SHOPHIST SET USERNAME = '" +form.getUsername()+ 
+            "' WHERE userid = "+memberId;
+              String sql4 = "UPDATE SHOPCART SET USERNAME = '" +form.getUsername()+ 
+            "' WHERE userid = "+memberId;
+               String sql5 = "UPDATE FAVORITY SET USERNAME = '" +form.getUsername()+ 
+            "' WHERE userid = "+memberId;
+            jt.update(sql3);
+            jt.update(sql5);
+            jt.update(sql4);
+            jt.update(sql6);
             jt.update(sql1);
             jt.update(sql2);
         }
@@ -180,10 +207,26 @@ public class AdminController {
     @GetMapping("/member/delete/{memberId}")
     public String deleteTicket(@PathVariable("memberId") long memberId,ModelMap model) {
         JdbcTemplate jt = jdbctempele();
+        String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
+        List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
+        for (Register lists : memberlist) {
+         //System.out.println("id = " + lists.getId());
+           // System.out.println("foodname" + lists.getFoodname());
+            this.memberDatabase.put(lists.getId(), lists);
+        }
+        
         if (this.memberDatabase.containsKey(memberId)) {
            String sql = "DELETE FROM USER_ROLES WHERE USERID = " + memberId;
            String sql2 = "DELETE FROM USERS WHERE USERID = " + memberId;
-           
+           String sql3 = "DELETE FROM SHOPHIST WHERE USERID = " + memberId;
+           String sql4 = "DELETE FROM FAVORITY WHERE USERID = " + memberId;
+           String sql5 = "DELETE FROM SHOPCART WHERE USERID = " + memberId;
+           String sql6 = "DELETE FROM COMMENTS WHERE USERID = " + memberId;
+
+           jt.update(sql4);
+           jt.update(sql3);
+           jt.update(sql5);
+           jt.update(sql6);
            jt.update(sql);
            jt.update(sql2);
             this.memberDatabase.remove(memberId);

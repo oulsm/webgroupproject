@@ -6,11 +6,18 @@
         <title>Shopping</title>
     </head>
     <body>
+               <security:authorize access="isAuthenticated()">
+            <c:url var="logoutUrl" value="/logout"/>
+            <form action="${logoutUrl}" method="post">
+                <input type="submit" value="Log out" />
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>    
+            </form>
+        </security:authorize>   
         <h2>Food that you have choosen </h2>
         <c:set var =  "total" value=" ${0}" />
         <c:choose>
             <c:when test="${fn:length(cartDatabase) == 0}">
-                <i>There are no food in you shopping cart.</i>
+                <i>There are no food in your shopping cart.</i>
             </c:when>
             <c:otherwise>
                 <h3>  FoodName                      Price                    Quantity</h3>
