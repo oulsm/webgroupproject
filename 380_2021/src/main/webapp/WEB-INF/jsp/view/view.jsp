@@ -22,7 +22,7 @@
     </security:authorize>
          <c:if test="${gotocart == true}">
             <p>You have put the food in your shopping cart. you can return to the <a href="<c:url value="/food/item" />">list</a> or
-            go to  <a href="<c:url value="/member/shopping/${member}" />">your shoppping cart</a>. 
+            go to  <a href="<c:url value="/member/shopcart/${member}" />">your shoppping cart</a>. 
             </p> 
         </c:if>
             <c:if test="${addfav == true}">
@@ -50,7 +50,7 @@
     <c:out value="${item.description}" /><br/><br/>
     price of this food $<c:out value="${item.price}" />/one <br /><br />
     <c:choose>
-        <c:when test="${item.noffood == 0}">
+        <c:when test="${item.noffood <= 0}">
             <i> Sorry! The food is no available for ordering. </i><br/>
         </c:when>
         <c:otherwise>

@@ -17,7 +17,7 @@
         <c:set var =  "total" value=" ${0}" />
         <c:choose>
             <c:when test="${fn:length(cartDatabase) == 0}">
-                <i>There are no food in your shopping cart.</i>
+                <i>There are no food in your shopping cart.</i><br/>
             </c:when>
             <c:otherwise>
                 <h3>  FoodName                      Price                    Quantity</h3>

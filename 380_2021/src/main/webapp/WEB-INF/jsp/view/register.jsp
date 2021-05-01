@@ -4,13 +4,18 @@
     <title>Sign up For the Ordering System</title>
 </head>
 <body>
+    <c:if test="${repeat == true}">
+        <p>Sorry! The username has been registered. You need to input a new one.</p>
+        </c:if>
+        <c:out value="${repeat}"/>
 <c:url var="logoutUrl" value="/logout"/>
 <security:authorize access="!isAuthenticated()">
 <h2>Sign up For the Ordering System</h2>
 </security:authorize>
 <security:authorize access="hasRole('ADMIN') ">
-    <h2>Create a new user by amin</h2>
+    <h2>Create a new user by admin</h2>
 </security:authorize>
+    
     <form:form method="POST" enctype="multipart/form-data"
                              modelAttribute="custdataForm">
           <form:label path="username">Username:</form:label><br />

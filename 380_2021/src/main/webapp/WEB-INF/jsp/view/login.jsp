@@ -7,6 +7,9 @@
         <c:if test="${param.error != null}">
             <p>Login failed.</p>
         </c:if>
+        <c:if test="${success != null}">
+        <p>Sign up successfully</p>
+        </c:if>
         <c:if test="${param.logout != null}">
             <p>You have logged out.</p>
         </c:if>

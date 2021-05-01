@@ -17,6 +17,12 @@
     </b:bean> 
 
     <http auto-config="true">
+        <intercept-url pattern="/food/item/edit/*" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/food/item/delete/*" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/admin/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/member/**" access="hasAnyRole('USER','ADMIN')" />
+     
+
         <form-login login-page="/login" authentication-failure-url="/login?error" />
         <logout logout-success-url="/login?logout"
                 invalidate-session="true"

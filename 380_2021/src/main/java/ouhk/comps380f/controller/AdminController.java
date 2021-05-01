@@ -26,6 +26,7 @@ import ouhk.comps380f.model.Register;
 @RequestMapping("/admin")
 public class AdminController {
     private Map<Long, Register> memberDatabase = new Hashtable<>();  
+    private Map<Long, Item> itemDatabase = new Hashtable<>();  
     public JdbcTemplate jdbctempele(){
         DriverManagerDataSource ds;
         ds = new DriverManagerDataSource();
@@ -36,8 +37,26 @@ public class AdminController {
         ds.setPassword("nbuser");
         return jdbcTemplate;
 }
+    public void selectitem(){
+    JdbcTemplate jt = jdbctempele();
+        String sqlSelect = "SELECT * FROM FOODLIST ";
+        List<Item> Itemlist = jt.query(sqlSelect, new ItemMapper());
+        for (Item lists : Itemlist) {
+            this.itemDatabase.put(lists.getId(), lists);
+        }
+    }
+    public void selectmember(){
+     JdbcTemplate jt = jdbctempele();
+        String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
+        List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
+        for (Register lists : memberlist) {
+      
+            this.memberDatabase.put(lists.getId(), lists);
+        }
+    }
+    
      public static class Form {
-          private String username;
+     private String username;
     private String password;
      private Long phonenumber;
     private String fullname;
@@ -87,25 +106,28 @@ public class AdminController {
      
      
      }
+     
+     
      @GetMapping(value = {"", "/page"})
     public String list(ModelMap model, HttpServletRequest request) {
-      if (
-              (!request.isUserInRole("ROLE_ADMIN")
+      if (   (!request.isUserInRole("ROLE_ADMIN")
                )) {
-           //  return new ModelAndView(new RedirectView("/member/list", true));
-            return "list";
+                selectitem();
+               model.addAttribute("itemDatabase", itemDatabase);
+           
+            return "redirect:/food/item";
         }
-       JdbcTemplate jt = jdbctempele();
-        String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
-        List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
-        for (Register lists : memberlist) {
+      // JdbcTemplate jt = jdbctempele();
+       // String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
+        //List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
+        //for (Register lists : memberlist) {
          //System.out.println("id = " + lists.getId());
            // System.out.println("foodname" + lists.getFoodname());
-            this.memberDatabase.put(lists.getId(), lists);
-        }
+        //    this.memberDatabase.put(lists.getId(), lists);
+        //}
         //System.out.println("map" + memberDatabase);
         //this.memberDatabase.put(lists.getId(), lists);
-
+        selectmember();
         // jdbcTemplate.queryForObject("SELECT * FROM FOODLIST","",memberDatabase );
         model.addAttribute("memberDatabase", memberDatabase);
         return "admin";
@@ -113,19 +135,30 @@ public class AdminController {
       @GetMapping("/member/edit/{memberId}")
     public ModelAndView showEdit(@PathVariable("memberId") long memberId,
             Principal principal, HttpServletRequest request, ModelMap model) {
+        
+        if (
+              (!request.isUserInRole("ROLE_ADMIN")
+               )) {
+          selectitem();
+               model.addAttribute("itemDatabase", itemDatabase);
+          return new ModelAndView(new RedirectView("/food/item", true));
+        }
         // Map<Long, Register> userDatabase = new Hashtable<>();  
-         JdbcTemplate jt = jdbctempele();
-        String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
-        List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
-        for (Register lists : memberlist) {
+      //   JdbcTemplate jt = jdbctempele();
+       // String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
+       // List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
+        //for (Register lists : memberlist) {
          //System.out.println("id = " + lists.getId());
            // System.out.println("foodname" + lists.getFoodname());
-            this.memberDatabase.put(lists.getId(), lists);
-        }
+         //   this.memberDatabase.put(lists.getId(), lists);
+       // }
+       selectmember();
         Register member = memberDatabase.get(memberId);
         if (member == null
                 || (!request.isUserInRole("ROLE_ADMIN")
                )) {
+             selectitem();
+               model.addAttribute("itemDatabase", itemDatabase);
             return new ModelAndView(new RedirectView("/food/item/list", true));
         }
         ModelAndView modelAndView = new ModelAndView("member");
@@ -146,31 +179,20 @@ public class AdminController {
     public String edit(@PathVariable("memberId") long memberId, AdminController.Form form,
             Principal principal, HttpServletRequest request, ModelMap model)
             throws IOException {
-        JdbcTemplate jt = jdbctempele();
-        String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
-        List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
-        for (Register lists : memberlist) {
-         //System.out.println("id = " + lists.getId());
-           // System.out.println("foodname" + lists.getFoodname());
-            this.memberDatabase.put(lists.getId(), lists);
+        if (
+              (!request.isUserInRole("ROLE_ADMIN")
+               )) {
+          selectitem();
+               model.addAttribute("itemDatabase", itemDatabase);
+          //return new ModelAndView(new RedirectView("/food/item", true));
+           return "redirect:/food/item";
         }
+        JdbcTemplate jt = jdbctempele();
+      
+       selectmember();
         Register member = this.memberDatabase.get(memberId);
    
-        //member.setNoffood(form.getNoffood());
-        if
-                (  (!request.isUserInRole("ROLE_ADMIN"))){ 
-    
-          
-            String sql = "UPDATE USERS SET PASSWORD = '" +form.getPassword() +
-            "',  FULLNAME ='" +form.getFullname()+ 
-            "', PHONENUMBER ="+ form.getPhonenumber() +
-            ", DELIVERY_ADDRESS = '"+form.getDelivery_address() + 
-            "' WHERE userid = "+memberId;
-            
-            jt.update(sql);
         
-        }
-        else{
 
            String sql1 = "UPDATE USER_ROLES SET USERNAME = '" +form.getUsername()+ 
             "' WHERE userid = "+memberId;
@@ -186,7 +208,7 @@ public class AdminController {
             "' WHERE userid = "+memberId;
               String sql4 = "UPDATE SHOPCART SET USERNAME = '" +form.getUsername()+ 
             "' WHERE userid = "+memberId;
-               String sql5 = "UPDATE FAVORITY SET USERNAME = '" +form.getUsername()+ 
+               String sql5 = "UPDATE FAVORITE SET USERNAME = '" +form.getUsername()+ 
             "' WHERE userid = "+memberId;
             jt.update(sql3);
             jt.update(sql5);
@@ -194,7 +216,7 @@ public class AdminController {
             jt.update(sql6);
             jt.update(sql1);
             jt.update(sql2);
-        }
+        //}
          
       
         
@@ -205,21 +227,23 @@ public class AdminController {
         return "redirect:/admin";
     }
     @GetMapping("/member/delete/{memberId}")
-    public String deleteTicket(@PathVariable("memberId") long memberId,ModelMap model) {
-        JdbcTemplate jt = jdbctempele();
-        String sqlSelect = "SELECT* FROM users INNER JOIN user_roles ON users.username = user_roles.username and user_roles.\"ROLE\" = 'ROLE_USER'";
-        List<Register> memberlist = jt.query(sqlSelect, new RegisterMapper());
-        for (Register lists : memberlist) {
-         //System.out.println("id = " + lists.getId());
-           // System.out.println("foodname" + lists.getFoodname());
-            this.memberDatabase.put(lists.getId(), lists);
+    public String deleteTicket(@PathVariable("memberId") long memberId,ModelMap model, HttpServletRequest request) {
+         if (
+              (!request.isUserInRole("ROLE_ADMIN")
+               )) {
+          selectitem();
+               model.addAttribute("itemDatabase", itemDatabase);
+          //return new ModelAndView(new RedirectView("/food/item", true));
+           return "redirect:/food/item";
         }
-        
+        JdbcTemplate jt = jdbctempele();
+   
+        selectmember();
         if (this.memberDatabase.containsKey(memberId)) {
            String sql = "DELETE FROM USER_ROLES WHERE USERID = " + memberId;
            String sql2 = "DELETE FROM USERS WHERE USERID = " + memberId;
            String sql3 = "DELETE FROM SHOPHIST WHERE USERID = " + memberId;
-           String sql4 = "DELETE FROM FAVORITY WHERE USERID = " + memberId;
+           String sql4 = "DELETE FROM FAVORITE WHERE USERID = " + memberId;
            String sql5 = "DELETE FROM SHOPCART WHERE USERID = " + memberId;
            String sql6 = "DELETE FROM COMMENTS WHERE USERID = " + memberId;
 

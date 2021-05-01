@@ -31,6 +31,7 @@ public class IndexController {
         jt.update(sql5);
         return "login";
     }
+    
     @GetMapping("/register")
     public String register() {
         return "register";

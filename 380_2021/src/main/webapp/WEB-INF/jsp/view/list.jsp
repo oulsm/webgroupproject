@@ -20,15 +20,17 @@
    <a href="<c:url value="/register/1" />">Sign up</a><br /><br />
      </security:authorize>
     <h2>Food Items</h2>
+    <security:authorize access="isAuthenticated()">
+     <b>Hi - <c:out value =" ${principal}" /></b>
     
-    
-    
+        </security:authorize>
      <security:authorize access="hasRole('ADMIN')">
          You can go to <a href="<c:url value="/admin/page" />">admin page</a> , Edit or delete and the food item below <br/><br/>
     <a href="<c:url value="/food/create" />">Create a Fast Food Item Here.</a><br /><br />
     </security:authorize>
     
     <security:authorize access="isAuthenticated()">
+       
         <a href="<c:url value="/member/home/${principal}" />">member page</a> and <a href="<c:url value="/member/shopcart/${principal}" />">shopping cart</a> <br/><br/>
         
     </security:authorize>

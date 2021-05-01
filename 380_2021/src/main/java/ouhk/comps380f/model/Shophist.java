@@ -5,6 +5,8 @@
  */
 package ouhk.comps380f.model;
 
+import java.util.Date;
+
 
 public class Shophist {
      private long cartid;
@@ -14,7 +16,7 @@ public class Shophist {
     private String foodname;
     private Double price;
     private Long noffood;
-    private String orderdate;
+    private Date orderdate;
 
     public long getCartid() {
         return cartid;
@@ -72,14 +74,15 @@ public class Shophist {
         this.noffood = noffood;
     }
 
-    public String getOrderdate() {
+    public Date getOrderdate() {
         return orderdate;
     }
 
-    public void setOrderdate(String orderdate) {
+    public void setOrderdate(Date orderdate) {
         this.orderdate = orderdate;
     }
-    
+
+   
     
     
 }

@@ -24,7 +24,7 @@ public class ShophistMapper implements RowMapper<Shophist> {
         shophist.setFoodname(result.getString("foodname"));
         shophist.setNoffood(result.getLong("noffood"));
         shophist.setPrice(result.getDouble("price"));
-        shophist.setOrderdate(result.getString("orderdate"));
+        shophist.setOrderdate(result.getDate("orderdate"));
 
         
         return shophist;

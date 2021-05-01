@@ -18,13 +18,14 @@
        
         <c:choose>
             <c:when test="${fn:length(histDatabase) == 0}">
-                <i>You have not order any food.</i>
+                <i>You have not order any food.</i><br/>
             </c:when>
             <c:otherwise>
-                <h3>  FoodName                      Price                    Ordertime</h3>
+                <h3>  FoodName                      Price       Quantity             Ordertime</h3>
                 <c:forEach items="${histDatabase}" var="entry">
                    <c:out value="${entry.value.foodname}" /> &nbsp; &nbsp;  
                    $<c:out value="${entry.value.price}" />/one &nbsp;&nbsp;
+                   <c:out value="${entry.value.noffood}" />&nbsp;&nbsp;&nbsp;&nbsp;
                    <c:out value="${entry.value.orderdate}" />                
                     <br/>
                 </c:forEach>
