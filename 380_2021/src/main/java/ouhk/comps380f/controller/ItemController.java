@@ -156,7 +156,7 @@ public class ItemController {
             this.itemDatabase.put(lists.getId(), lists);
         }
 
-        if ((request.isUserInRole("ROLE_USER"))) {
+        if ((request.isUserInRole("ROLE_USER")|| request.isUserInRole("ROLE_ADMIN"))) {
             model.addAttribute("principal", principal.getName());
         }
         model.addAttribute("itemDatabase", itemDatabase);
@@ -178,16 +178,7 @@ public class ItemController {
     public View create(Form form, Principal principal) throws IOException {
         Item item = new Item();;
 
-        for (MultipartFile filePart : form.getAttachments()) {
-            Attachment attachment = new Attachment();
-            attachment.setName(filePart.getOriginalFilename());
-            attachment.setMimeContentType(filePart.getContentType());
-            attachment.setContents(filePart.getBytes());
-            if (attachment.getName() != null && attachment.getName().length() > 0
-                    && attachment.getContents() != null && attachment.getContents().length > 0) {
-                item.addAttachment(attachment);
-            }
-        }
+       
         JdbcTemplate jt = jdbctempele();
 
         jt.update(
