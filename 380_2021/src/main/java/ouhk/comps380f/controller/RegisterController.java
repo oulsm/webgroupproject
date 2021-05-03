@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ouhk.comps380f.controller;
 
 //import com.ibm.dtfj.corereaders.Register;
@@ -12,7 +8,6 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import javax.activation.DataSource;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
