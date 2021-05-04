@@ -286,6 +286,9 @@ public class MemberController {
                 }
 
             }
+            String sql5 = "DELETE FROM SHOPCART " ;
+        jt.update(sql5);
+        cartDatabase.clear();
         }
         
         String sqlSelect5 = "SELECT * FROM SHOPHIST WHERE userid = " + memberId;
